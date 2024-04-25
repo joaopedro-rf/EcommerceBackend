@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 export function useAddToCart() {
-  const URL = `http://localhost:8080/api/carts/addProduct`;
+  const URL = `http://54.210.75.235/api/carts/addProduct`;
   const postData = async (postData) => {
     
     try {
