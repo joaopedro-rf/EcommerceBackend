@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
   const { data, error, isLoading, mutate } = useSWR(
-    user ? `http://54.210.75.235/api/carts/findByUser/${user.userID}` : null,
+    user ? `https://54.210.75.235:443/api/carts/findByUser/${user.userID}` : null,
     fetcher,
     {
       onError: (err) => {
