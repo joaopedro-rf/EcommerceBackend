@@ -15,7 +15,7 @@ const fetcher = async (url) => {
 }; 
 
 const useCoffeeBar = () => {
-  const URL =  `http://54.210.75.235/api/products`;
+  const URL =  `https://54.210.75.235/api/products`;
   const { data, error } = useSWR(URL, fetcher, {
     onError: (err) => {
       console.error('SWR error:', err);

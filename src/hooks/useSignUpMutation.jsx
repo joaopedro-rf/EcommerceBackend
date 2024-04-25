@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 export function useSignUpMutation() {
   
 
-  const URL = `http://54.210.75.235/api/users/register`;
+  const URL = `https://54.210.75.235/api/users/register`;
   const postData = async (formData) => {
     try {
       const response = await fetch(URL, {
