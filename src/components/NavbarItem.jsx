@@ -1,11 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const NavbarItem = ({label}) => {
     return (
         <ul >
-            <a className="text-white cursor-pointer hover:text-gray-500 transition" href={label}> 
-            {label}
-            </a>
+             <Link to={`/${label}`} className="text-white cursor-pointer hover:text-gray-500 transition">{label}</Link>
         </ul>
     )
 }
