@@ -33,7 +33,7 @@ const Drawer = ({ visible }) => {
             </div>
           </div>
         ))}
-        <p className="text-white text-center font-semibold text-lg">TOTAL PRICE: ${data.price}</p>
+        <p className="text-white text-center font-semibold text-lg">TOTAL PRICE: ${data?.price}</p>
         <a className="block w-full bg-red-600 hover:bg-red-700 text-center py-3 mb-5 font-semibold" href="/Cart">VIEW CART</a>
       </div>
     </div>
