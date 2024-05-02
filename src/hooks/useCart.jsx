@@ -15,7 +15,7 @@ const fetcher = async (url) => {
 }; 
 
 const useCart = ({userId}) => {
-  const URL =  `http://localhost:8080/api/carts/${userId}`;
+  const URL =  `https://api.joaopedrodev.com/api/carts/${userId}`;
   const { data, error } = useSWR(URL, fetcher, {
     onError: (err) => {
       console.error('SWR error:', err);
