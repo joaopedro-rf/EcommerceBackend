@@ -6,8 +6,9 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "./AuthContext";
-
 import useSWR from "swr";
+import Stomp from "stompjs";
+import SockJS from "sockjs-client/dist/sockjs";
 
 const fetcher = async (url) => {
   try {
@@ -27,6 +28,9 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
+  const [stompClient, setStompClient] = useState(null);
+  const [messages, setMessages] = useState([]);
+
   const { data, error, isLoading, mutate } = useSWR(
     user ? `https://api.joaopedrodev.com/api/carts/findByUser/${user.userID}` : null,
     fetcher,
@@ -39,52 +43,69 @@ export const CartProvider = ({ children }) => {
       },
       revalidateOnFocus: false,
       shouldRetryOnError: false,
-
     },
   );
-  
 
-  const increaseCartQuantity = useCallback((productId) => {
-    setCart((prevCart) => {
-      const product = prevCart.find(
-        (product) => product.productId === productId,
+  const updateCart = (productId, quantity) => {
+    const existingProduct = cart.find(
+      (product) => product.productId === productId,
+    );
+    if (existingProduct) {
+      const newQuantity = Math.max(1, existingProduct.quantity + quantity);
+      setCart(
+        cart.map((product) =>
+          product.productId === productId
+            ? { ...product, quantity: newQuantity }
+            : product,
+        ),
       );
-      if (product) {
-        const newProduct = { ...product, quantity: product.quantity + 1 };
-        console.log(newProduct)
-        return [
-          ...prevCart.filter((product) => product.productId !== productId),
-          newProduct,
-        ];
-      }
-      console.log(prevCart)
-      return prevCart;
-    });
-  }, []);
+    }
+  };
 
-  const decreaseCartQuantity = useCallback((productId) => {
-    setCart((prevCart) => {
-      const product = prevCart.find(
-        (product) => product.productId === productId,
-      );
-      if (product && product.quantity > 1) {
-        const newProduct = { ...product, quantity: product.quantity - 1 };
-        return [
-          ...prevCart.filter((product) => product.productId !== productId),
-          newProduct,
-        ];
-      }
-      return prevCart;
+  useEffect(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = Stomp.over(socket);
+
+    client.connect({}, () => {
+      client.subscribe("/topic/cart", (message) => {
+        const receivedMessage = message.body;
+        setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        mutate();
+      });
     });
-  }, []);
+
+    setStompClient(client);
+
+    return () => {
+      client.disconnect();
+    };
+  }, [messages, mutate]);
+
+  useEffect(() => {
+    if (stompClient) {
+      const intervalId = setInterval(() => {
+        if (!stompClient.connected) {
+          console.log(
+            "WebSocket connection closed. Attempting to reconnect...",
+          );
+          stompClient.connect({}, () => {
+            console.log("WebSocket reconnected.");
+          });
+        }
+      }, 5000); // check every 5 seconds
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [stompClient]);
 
   return (
     <CartContext.Provider
       value={{
         data,
         mutateCart: mutate,
-        decreaseCartQuantity,
-        increaseCartQuantity,
+        updateCart,
         cart,
       }}
     >

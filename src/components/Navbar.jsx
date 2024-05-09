@@ -6,6 +6,7 @@ import MenuAccount from "./MenuAccount";
 import { FaRegCircleUser } from "react-icons/fa6";
 import NavbarItem from "./NavbarItem";
 import CartDrawer from "./CartDrawer";
+import { useCart } from "../context/CartContext";
 
 export const Navbar = () => {
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
@@ -13,7 +14,8 @@ export const Navbar = () => {
   const [openCartDrawer, setOpenCartDrawer] = useState(false);
   const [Background, setBackground] = useState(false);
   const navigate = useNavigate();
-  
+  const {mutate} = useCart();
+
   const TOP_OFFSET = 66;
   
   
@@ -46,7 +48,8 @@ export const Navbar = () => {
 
   const handleOpenCartDrawer = useCallback(() => {
     setOpenCartDrawer((prevOpenCart) => !prevOpenCart);
-  }, []);
+    mutate;
+  }, [mutate]);
 
   return (
     <nav className="w-full fixed z-40 text-white text-sm opacity-90">
@@ -139,7 +142,7 @@ export const Navbar = () => {
                 className="cursor-pointer hover:text-gray-500 transition"
               />
             </li>
-            <li className="cursor-pointer hover:text-gray-500 transition relative">
+            <li className="cursor-pointer  transition relative">
               <BsCart
                 onClick={handleOpenCartDrawer}  
                 size={24}

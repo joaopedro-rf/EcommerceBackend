@@ -60,7 +60,7 @@ export const CoffeeBar = () => {
               <p className="hover:text-gray-500 cursor-pointer">
                 <BsHeart size={24} />
               </p>
-              <p className="hover:text-gray-500 cursor-pointer">
+              <p className="hover:text-gray-500 ">
                 <BsSearch onClick={() => openModal(product)} size={24} />
                 <CartModal
                   isOpen={isOpen}
