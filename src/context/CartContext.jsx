@@ -63,7 +63,7 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS("https://localhost:8080/ws");
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
