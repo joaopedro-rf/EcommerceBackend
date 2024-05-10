@@ -3,37 +3,67 @@ import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 
 export default function Cart() {
-  const { data, cart , updateCart } = useCart();
+  const { data, cart, updateCart, addToCart } = useCart();
+  const [localCart, setLocalCart] = useState([]);
 
-  const decreaseCartQuantity = useCallback(
-    (productId) => {
-      updateCart(productId, -1);
-    },
-    [updateCart],
-  );
+  useEffect(() => {
+    setLocalCart(cart);
+  }, [cart]);
 
-  const increaseCartQuantity = useCallback(
-    (productId) => {
-      updateCart(productId, 1);
-    },
-    [updateCart],
-  );
+  const handleAddToCart = useCallback(() => {
+    localCart.forEach((product) => {
+      if (
+        cart.find((item) => item.productId === product.productId).quantity ===
+        localCart.find((item) => item.productId === product.productId).quantity
+      )
+        return;
+      else {
+        let quantity =
+          localCart.find((item) => item.productId === product.productId)
+            .quantity -
+          cart.find((item) => item.productId === product.productId).quantity;
+
+        addToCart({ productId: product.productId, quantity });
+        quantity = 0;
+      }
+    });
+  }, [addToCart, cart, localCart]);
+
+  const handleIncreaseQuantity = useCallback((productId) => {
+    setLocalCart((prevCart) =>
+      prevCart.map((product) =>
+        product.productId === productId
+          ? { ...product, quantity: product.quantity + 1 }
+          : product,
+      ),
+    );
+  }, []);
+
+  const handleDecreaseQuantity = useCallback((productId) => {
+    setLocalCart((prevCart) =>
+      prevCart.map((product) =>
+        product.productId === productId && product.quantity > 0
+          ? { ...product, quantity: product.quantity - 1 }
+          : product,
+      ),
+    );
+  }, []);
 
   const Product = ({ product }) => (
-    <div className="mb-4 grid min-h-full min-w-full  grid-rows-1 place-items-center gap-4 border-b pb-4 pt-4 middle:grid-cols-5 ">
+    <div className="mb-4 grid min-h-full min-w-full grid-rows-1 place-items-center gap-4 border-b pb-4 pt-4 middle:grid-cols-5 ">
       <img
         src={product.imageUrl}
         alt={product.name}
         className="size-64 object-contain tablet:mx-8 middle:size-48"
       />
-      <p className="items-center text-white middle:text-xl middle:font-semibold">
+      <p className="  text-white middle:text-xl middle:font-semibold">
         {product.name}
       </p>
       <div className="flex flex-row gap-4 ">
         <button
           className=" px-2 py-2 text-white middle:block "
-          onClick={() => decreaseCartQuantity(product.productId)}
-          disabled={product.quantity <= 1}
+          onClick={() => handleDecreaseQuantity(product.productId)}
+          disabled={product.quantity < 0}
         >
           -
         </button>
@@ -42,7 +72,7 @@ export default function Cart() {
         </p>
         <button
           className="  px-2 py-2 text-white middle:block "
-          onClick={() => increaseCartQuantity(product.productId)}
+          onClick={() => handleIncreaseQuantity(product.productId)}
         >
           +
         </button>
@@ -84,25 +114,28 @@ export default function Cart() {
                 Product total:
               </p>
             </div>
-            {cart?.map((product) => (
+            {localCart?.map((product) => (
               <Product key={product.productId} product={product} />
             ))}
           </div>
           <p className="mb-8 text-center text-white desktop:mb-16 desktop:mt-8 desktop:text-2xl desktop:font-bold ">
             CART TOTAL: ${data?.price.toFixed(2)}
           </p>
-          <div className="w-full px-16 py-8 text-center text-white">
+          <div className="mx-8 mb-8 grid grid-rows-3 gap-6 text-center text-white middle:flex middle:justify-end">
             <a
-              className="mb-4 block w-full cursor-pointer bg-brown px-4 py-2 hover:opacity-90"
+              className="cursor-pointer bg-mid px-4 py-2 hover:opacity-90 "
               href="/Shop"
             >
               CONTINUE SHOPPING
             </a>
-            <button className="mb-4 block w-full cursor-pointer bg-green-600 px-4 py-2 hover:bg-green-700">
+            <button
+              onClick={() => handleAddToCart()}
+              className="cursor-pointer bg-mid px-4 py-2 hover:opacity-90"
+            >
               UPDATE CART
             </button>
             <a
-              className="display:flex block w-full cursor-pointer bg-red-600 px-4 py-2 hover:bg-red-700"
+              className="cursor-pointer bg-mid px-4 py-2 hover:opacity-90"
               href=""
             >
               CHECKOUT
