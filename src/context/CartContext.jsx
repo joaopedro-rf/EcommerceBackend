@@ -9,6 +9,7 @@ import { useAuth } from "./AuthContext";
 import useSWR from "swr";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
+import { useAddToCart } from "../hooks/useAddToCart";
 
 const fetcher = async (url) => {
   try {
@@ -30,6 +31,8 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [stompClient, setStompClient] = useState(null);
   const [messages, setMessages] = useState([]);
+  const { mutate: mutateAddToCart } = useAddToCart();
+  const userId = user ? user.userID : null;
 
   const { data, error, isLoading, mutate } = useSWR(
     user ? `https://api.joaopedrodev.com/api/carts/findByUser/${user.userID}` : null,
@@ -46,6 +49,18 @@ export const CartProvider = ({ children }) => {
     },
   );
 
+  const addToCart = async ({productId,quantity}) => {
+    console.log("Add to cart:", productId, quantity, userId)
+    if (user) {
+      try {
+        await mutateAddToCart({ productId, userId, quantity });
+        
+      } catch (error) {
+        console.error("Add to cart failed:", error);
+      }
+    }
+  };
+
   const updateCart = (productId, quantity) => {
     const existingProduct = cart.find(
       (product) => product.productId === productId,
@@ -60,10 +75,11 @@ export const CartProvider = ({ children }) => {
         ),
       );
     }
+   
   };
 
   useEffect(() => {
-    const socket = new SockJS("https://localhost:8080/ws");
+    const socket = new SockJS("https://api.joaopedrodev.com/ws");
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
@@ -92,7 +108,7 @@ export const CartProvider = ({ children }) => {
             console.log("WebSocket reconnected.");
           });
         }
-      }, 5000); // check every 5 seconds
+      }, 5000); 
 
       return () => {
         clearInterval(intervalId);
@@ -106,6 +122,7 @@ export const CartProvider = ({ children }) => {
         data,
         mutateCart: mutate,
         updateCart,
+        addToCart,
         cart,
       }}
     >

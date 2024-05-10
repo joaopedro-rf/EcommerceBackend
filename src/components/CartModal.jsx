@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 
 const CartModal = ({ isOpen, onClose, data }) => {
-  const { cart, updateCart } = useCart();
+  const { cart, updateCart , addToCart } = useCart();
   const [quantity, setQuantity] = useState(0);
-
+  
   const decreaseCartQuantity = () => {
     setQuantity(quantity - 1);
   };
@@ -17,6 +17,14 @@ const CartModal = ({ isOpen, onClose, data }) => {
     onClose();
     setQuantity(0);
   }
+
+  const handleAddToCart = () =>{
+    
+    addToCart({ productId: data.productId, quantity });
+    setQuantity(0);
+    onClose();
+  }
+
   if (!isOpen) return null;
 
   return (
@@ -100,6 +108,7 @@ const CartModal = ({ isOpen, onClose, data }) => {
               shadow-sm hover:bg-green-700 focus:outline-none 
              
               mobile:ml-3 mobile:w-auto mobile:text-sm"
+              onClick={handleAddToCart}
               
             >
               Add to cart

@@ -35,44 +35,46 @@ export const CoffeeBar = () => {
     setIsOpen(false);
   };
   return (
-    <div className="text-left w-full ">
-      <div className="grid grid-cols-1 tablet:grid-cols-2 middle:grid-cols-3 widder:grid-cols-4 gap-8 mobile:px-8 middle:px-12 px-16 py-24 ">
+    <div className="w-full text-left ">
+      <div className="grid grid-cols-1 gap-8 px-16 py-24 mobile:px-8 tablet:grid-cols-2 middle:grid-cols-3 middle:px-12 widder:grid-cols-4 ">
         {data?.content.map((product) => (
           <div key={product.productId} className=" py-4 ">
             <div className="flex">
               <img
                 src={product.imageUrl}
                 alt={product.name}
-                className="w-auto min-h-60 max-h-72 object-contain mobile:w-full mobile:h-72 mr-64 mb-4"
+                className="mb-4 mr-64 max-h-72 min-h-60 w-auto object-contain mobile:h-72 mobile:w-full"
               />
             </div>
 
-            <h2 className="text-lg text-white font-semibold mb-4">
+            <h2 className="mb-4 text-lg font-semibold text-white">
               {product.name}
             </h2>
-            <div className="text-white flex-row flex ml-auto gap-4  mb-4  ">
-              <p className="hover:text-gray-500 cursor-pointer">
+            <div className="mb-4 ml-auto flex flex-row gap-4  text-white  ">
+              <p className="cursor-pointer hover:text-gray-500">
                 <BsCart
                   onClick={() => addToCart(product.productId, userId, 1)}
                   size={24}
                 />
               </p>
-              <p className="hover:text-gray-500 cursor-pointer">
+              <p className="cursor-pointer hover:text-gray-500">
                 <BsHeart size={24} />
               </p>
-              <p className="hover:text-gray-500 ">
-                <BsSearch onClick={() => openModal(product)} size={24} />
+              <div className="hover:text-gray-500 ">
+                <span>
+                  <BsSearch onClick={() => openModal(product)} size={24} />
+                </span>
                 <CartModal
                   isOpen={isOpen}
                   onClose={closeModal}
                   data={selectedProduct}
                 >
-                  <h2 className="text-xl font-bold mb-4">Modal Title</h2>
+                  <h2 className="mb-4 text-xl font-bold">Modal Title</h2>
                   <p>This is the content of the modal.</p>
                 </CartModal>
-              </p>
+              </div>
             </div>
-            <p className="text-lg text-lightbrown font-bold">
+            <p className="text-lg font-bold text-lightbrown">
               ${product.price}
             </p>
           </div>

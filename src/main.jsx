@@ -9,7 +9,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 
-
 const queryClient = new QueryClient();
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -38,11 +37,11 @@ const router = createBrowserRouter([
 ]);
 
 root.render(
-  <AuthProvider>
-    <CartProvider>
-      <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <CartProvider>
         <RouterProvider router={router} />
-      </QueryClientProvider>
-    </CartProvider>
-  </AuthProvider>
+      </CartProvider>
+    </AuthProvider>
+  </QueryClientProvider>,
 );
